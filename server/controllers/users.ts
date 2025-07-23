@@ -15,10 +15,13 @@ export const getAllUsers = async(req: Request, res: Response) => {
 export const getUserByUN = async(req: Request, res: Response) => {
   try {
     const search = req.params.search;
-    const user = await UserModel.findOne({ username: {
-      '$regex': `^${search}$`, 
-      $options: 'i'
-    }}).select("-password")
+    const user = await UserModel
+      .findOne({ username: {
+        '$regex': `^${search}$`, 
+        $options: 'i'
+      }})
+      .select("-password")
+      .populate({ path: "pets", select: ["name", "animal"] });
     if (user) {
       return res.status(200).json(user)
     } 

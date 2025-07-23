@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import userRouter from "./routes/users";
+import petRouter from "./routes/pets";
 import 'dotenv/config';
 import mongoose from "mongoose";
 
@@ -21,6 +22,7 @@ app.post('/testing', (req, res) => {
 });
 
 app.use("/api/users", userRouter);
+app.use("/api/pets", petRouter);
 
 app.use('/*splat', (req, res) => res.status(404).json({ error: "Endpoint not found." }));
 
