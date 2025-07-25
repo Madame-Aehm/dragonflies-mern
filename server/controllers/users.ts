@@ -2,34 +2,10 @@ import { Request, Response } from "express";
 import { handleError } from "../utils/errorHandling";
 import UserModel from "../models/users";
 import { encryptPassword } from "../utils/hashPassword";
+import bcrypt from "bcrypt"
+import { generateToken } from "../utils/generateToken";
 
-export const getAllUsers = async(req: Request, res: Response) => {
-  try {
-    const users = await UserModel.find().select("-password");
-    res.status(users.length === 0 ? 204 : 200).json(users)
-  } catch (error) {
-    handleError(error, res);
-  }
-}
-
-export const getUserByUN = async(req: Request, res: Response) => {
-  try {
-    const search = req.params.search;
-    const user = await UserModel
-      .findOne({ username: {
-        '$regex': `^${search}$`, 
-        $options: 'i'
-      }})
-      .select("-password")
-      .populate({ path: "pets", select: ["name", "animal"] });
-    if (user) {
-      return res.status(200).json(user)
-    } 
-    res.status(404).json({ error: "no user found" })
-  } catch (error) {
-    handleError(error, res);
-  }
-}
+// auth functions 
 
 export const register = async(req: Request, res: Response) => {
   try {
@@ -57,6 +33,70 @@ export const register = async(req: Request, res: Response) => {
         createdAt: newUser.createdAt
       }
     })
+  } catch (error) {
+    handleError(error, res);
+  }
+}
+
+export const login = async(req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    console.log("details:", email, password)
+    if (!email || !password) {
+      return res.status(400).json({ error: "both email and password are required" })
+    }
+    // validate email + password correctly formatted
+    const user = await UserModel.findOne({ email })
+    console.log("found user", user);
+    if (!user) {
+      return res.status(404).json({ error: "no user with that email" });
+    }
+    console.log("password", password, "hashedPW", user.password);
+    const isValid = await bcrypt.compare(password, user.password);
+    console.log("isValid", isValid);
+    if (!isValid) {
+      return res.status(400).json({ error: "password is wrong" });
+    }
+    user.set("password", undefined);
+    const token = generateToken(user._id.toString(), user.email)
+    console.log(token);
+    res.status(200).json({
+      validated: true,
+      token: token,
+      user: user
+    })
+  } catch (error) {
+    handleError(error, res);
+  }
+}
+
+
+
+// user functions
+
+export const getAllUsers = async(req: Request, res: Response) => {
+  try {
+    const users = await UserModel.find().select("-password");
+    res.status(users.length === 0 ? 204 : 200).json(users)
+  } catch (error) {
+    handleError(error, res);
+  }
+}
+
+export const getUserByUN = async(req: Request, res: Response) => {
+  try {
+    const search = req.params.search;
+    const user = await UserModel
+      .findOne({ username: {
+        '$regex': `^${search}$`, 
+        $options: 'i'
+      }})
+      .select("-password")
+      .populate({ path: "pets", select: ["name", "animal"] });
+    if (user) {
+      return res.status(200).json(user)
+    } 
+    res.status(404).json({ error: "no user found" })
   } catch (error) {
     handleError(error, res);
   }
