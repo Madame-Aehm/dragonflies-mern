@@ -25,6 +25,7 @@ export const register = async(req: Request, res: Response) => {
     //   success: true,
     //   _id: newUser._id
     // })
+    // generate token
     res.status(201).json({
       user: {
         email: newUser.email,
@@ -70,6 +71,14 @@ export const login = async(req: Request, res: Response) => {
   }
 }
 
+export const getActiveUser = (req: Request, res: Response) => {
+
+  res.status(200).json({ 
+    message: "token validated", 
+    user: req.user
+  });
+}
+
 
 
 // user functions
@@ -104,7 +113,8 @@ export const getUserByUN = async(req: Request, res: Response) => {
 
 export const updateUser = async(req: Request, res: Response) => {
   try {
-    const _id = req.params._id;
+    // const _id = req.params._id;
+    const _id = req.user._id;
     const body = req.body;
     console.log(_id, body);
     const updatedUser = await UserModel.findByIdAndUpdate(

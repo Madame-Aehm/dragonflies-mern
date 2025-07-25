@@ -4,6 +4,7 @@ import userRouter from "./routes/users";
 import petRouter from "./routes/pets";
 import 'dotenv/config';
 import mongoose from "mongoose";
+import { testingMiddleware } from "./middlewares/users";
 
 const app = express();
 
@@ -16,6 +17,8 @@ app.use(
     })
 );
 app.use(cors());
+app.use(testingMiddleware);
+
 
 app.post('/testing', (req, res) => {
     res.send('Hello World!')

@@ -54,7 +54,7 @@ If you are using TypeScript, the Request Type definition will need to be extende
 declare global {
     namespace Express {
         interface Request {
-        user?: any // or custom user type 
+            user?: any // or custom user type 
         }
     }
 }
