@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import LogOut from "./LogOut";
+import LogOut from "../LogOut";
 
 
 function NavBarLayout({ children }: PropsWithChildren) {
@@ -17,8 +17,9 @@ function NavBarLayout({ children }: PropsWithChildren) {
                 </>}
                 { user && 
                     <>
+                        <Link to={"/profile"}>Profile</Link>
                         <LogOut />
-                        <p style={{ alignSelf: "end" }}>{user.username}</p>
+                        <p>{user.username}</p>
                     </>
                 }
                 
