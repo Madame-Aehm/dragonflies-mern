@@ -49,7 +49,7 @@ export const upload = multer({
 })
 ```
 
-In some cases, this would be enough. You could use Express to serve the static files directly from your server, and send that string to the database:
+In some cases, this would be enough. You could use Express to [serve the static files](https://expressjs.com/en/starter/static-files.html) directly from your server, and send that string to the database:
 
 ```ts
 app.use("/images", express.static("uploads"));
@@ -78,7 +78,7 @@ export const upload = multer({
     fileFilter: (req, file, cb) => {
       const fileExt = path.extname(file.originalname);
       if (fileExt !== ".jpg" && fileExt !== ".jpeg" && fileExt !== ".png") {
-        cb(new Error("File extension not supported"), false);
+        cb(new Error("File extension not supported"));
         return;
       }
       cb(null, true);

@@ -15,9 +15,8 @@ const PreviewImage = ({ file, current }: Props) => {
         }
 
         return () => {
-            if (tempURL) {
-                URL.revokeObjectURL(tempURL);
-            }
+            URL.revokeObjectURL(tempURL);
+            setTempURL("")
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [file])
