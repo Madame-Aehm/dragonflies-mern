@@ -34,6 +34,7 @@ function Profile() {
                 <label htmlFor="image">Image:</label>
                 <input id="image" type="file" onChange={handleFileChange} />
                 <PreviewImage file={imageFile} />
+                <button type="submit">Save Changes</button>
             </form>
         </div>
     )
