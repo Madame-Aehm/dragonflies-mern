@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext"
 import PreviewImage from "../components/PreviewImage";
+import { baseURL } from "../utils/baseURL";
+import type { User } from "../@types";
 
 
 function Profile() {
-    const { user } = useAuth()
+    const { user, setUser } = useAuth()
     
     const [ username, setUsername ] = useState(user?.username);
     const [ email, setEmail ] = useState(user?.email);
@@ -15,11 +17,36 @@ function Profile() {
         setImageFile(e.target.files && e.target.files[0]);
     }
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (username !== user?.username || email !== user?.email || imageFile) {
             console.log(username, email, imageFile);
-            // use form data to send request
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) return; // communicate that there is not token
+
+                const headers = new Headers();
+                headers.append("Authorization", "Bearer " + token);
+
+                const body = new FormData();
+                body.append("username", username!);
+                body.append("email", email!)
+                if (imageFile) {
+                    body.append("image", imageFile);
+                }
+                const requestOptions = {
+                    method: "POST",
+                    headers: headers,
+                    body: body
+                };
+                const response = await fetch(baseURL + "/users/update", requestOptions);
+                if (response.ok) {
+                    const result: User = await response.json()
+                    setUser(result);
+                }
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
 
@@ -33,7 +60,7 @@ function Profile() {
                 <input id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 <label htmlFor="image">Image:</label>
                 <input id="image" type="file" onChange={handleFileChange} />
-                <PreviewImage file={imageFile} />
+                <PreviewImage file={imageFile} current={user!.image} />
                 <button type="submit">Save Changes</button>
             </form>
         </div>

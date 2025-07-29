@@ -4,7 +4,8 @@ import userRouter from "./routes/users";
 import petRouter from "./routes/pets";
 import 'dotenv/config';
 import mongoose from "mongoose";
-import { testingMiddleware } from "./middlewares/users";
+import { testingMiddleware } from "./middlewares/jwt";
+import configureCloudinary from "./config/cloudinary";
 
 const app = express();
 
@@ -17,6 +18,9 @@ app.use(
     })
 );
 app.use(cors());
+configureCloudinary();
+app.use("/", express.static("documentation"));
+app.use("/images", express.static("uploads"));
 app.use(testingMiddleware);
 
 

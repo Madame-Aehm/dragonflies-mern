@@ -4,6 +4,7 @@ import UserModel from "../models/users";
 import { encryptPassword } from "../utils/hashPassword";
 import bcrypt from "bcrypt"
 import { generateToken } from "../utils/generateToken";
+import { imageUpload, removeTempFile } from "../utils/imageManagement";
 
 // auth functions 
 
@@ -117,6 +118,10 @@ export const updateUser = async(req: Request, res: Response) => {
     const _id = req.user._id;
     const body = req.body;
     console.log(_id, body);
+    if (req.file) {
+      body.image = await imageUpload(req.file, "dragonflies/user_profiles");
+    }
+    // if body.password, encrpyt password
     const updatedUser = await UserModel.findByIdAndUpdate(
       _id,
       body,
@@ -125,5 +130,9 @@ export const updateUser = async(req: Request, res: Response) => {
     res.status(200).json(updatedUser)
   } catch (error) {
     handleError(error, res);
+  } finally {
+    if (req.file) {
+      removeTempFile(req.file)
+    }
   }
 }

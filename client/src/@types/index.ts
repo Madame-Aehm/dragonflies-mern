@@ -17,4 +17,5 @@ export interface User {
     _id: string
     createdAt: string
     pets: string[]
+    image: string
 }
