@@ -22,7 +22,7 @@ function Profile() {
 
     const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (username !== user.username || email !== user?.email || imageFile) {
+        if (username !== user.username || email !== user.email || imageFile) {
             console.log(username, email, imageFile);
             try {
                 const token = localStorage.getItem("token");
@@ -55,7 +55,7 @@ function Profile() {
 
     return (
         <div>
-            <h1>Profile of {user!.username}</h1>
+            <h1>Profile of {user.username}</h1>
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1em" }}>
                 <label htmlFor="username">Username:</label>
                 <input id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
@@ -63,7 +63,7 @@ function Profile() {
                 <input id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 <label htmlFor="image">Image:</label>
                 <input id="image" type="file" onChange={handleFileChange} />
-                <PreviewImage file={imageFile} current={user!.image} />
+                <PreviewImage file={imageFile} current={user.image} />
                 <button type="submit">Save Changes</button>
             </form>
         </div>
