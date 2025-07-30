@@ -32,33 +32,5 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RouterProvider router={router} />
-    {/* <BrowserRouter>
-      <AuthContextProvider>
-        <Routes>
-          <Route path='/' element={
-            <NavBarLayout>
-              <Homepage />
-            </NavBarLayout>
-          } />
-          <Route path='/login' element={
-            <NavBarLayout>
-              <Login />
-            </NavBarLayout>
-          } />
-          <Route path='/register' element={
-            <NavBarLayout>
-              <Register />
-            </NavBarLayout>
-          } />
-          <Route path='/profile' element={
-            <NavBarLayout>
-              <ProtectedLayout>
-                <Profile />
-              </ProtectedLayout>
-            </NavBarLayout>
-          } />
-        </Routes>
-      </AuthContextProvider>
-    </BrowserRouter> */}
   </StrictMode>,
 )
