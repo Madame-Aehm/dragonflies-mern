@@ -1,15 +1,18 @@
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext"
+// import { useAuth } from "../context/AuthContext"
 import PreviewImage from "../components/PreviewImage";
 import { baseURL } from "../utils/baseURL";
 import type { User } from "../@types";
+import { useOutletContext } from "react-router";
+import { useAuth } from "../context/AuthContext";
 
 
 function Profile() {
-    const { user, setUser } = useAuth()
+    const user = useOutletContext<User>()
+    const { setUser } = useAuth()
     
-    const [ username, setUsername ] = useState(user?.username);
-    const [ email, setEmail ] = useState(user?.email);
+    const [ username, setUsername ] = useState(user.username);
+    const [ email, setEmail ] = useState(user.email);
     const [ imageFile, setImageFile ] = useState<null | File>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,7 +22,7 @@ function Profile() {
 
     const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (username !== user?.username || email !== user?.email || imageFile) {
+        if (username !== user.username || email !== user?.email || imageFile) {
             console.log(username, email, imageFile);
             try {
                 const token = localStorage.getItem("token");
@@ -29,8 +32,8 @@ function Profile() {
                 headers.append("Authorization", "Bearer " + token);
 
                 const body = new FormData();
-                body.append("username", username!);
-                body.append("email", email!)
+                body.append("username", username);
+                body.append("email", email)
                 if (imageFile) {
                     body.append("image", imageFile);
                 }
