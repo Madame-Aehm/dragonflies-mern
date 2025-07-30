@@ -6,6 +6,7 @@ import 'dotenv/config';
 import mongoose from "mongoose";
 import { testingMiddleware } from "./middlewares/jwt";
 import configureCloudinary from "./config/cloudinary";
+import path from "path";
 
 
 
@@ -27,7 +28,7 @@ const main = async() => {
         );
         app.use(cors());
         configureCloudinary();
-        app.use("/", express.static("documentation"));
+        app.use("/", express.static(path.join(__dirname, "documentation")));
         app.use("/images", express.static("uploads"));
         app.use(testingMiddleware);
 
