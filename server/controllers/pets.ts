@@ -6,8 +6,17 @@ import UserModel from "../models/users";
 
 
 export const getPets = async(req: Request, res: Response) => {
+    const { search } = req.query;
     try {
-        const pets = await PetModel.find().populate({ path: "owner", select: "username createdAt" });
+        let pets;
+        if (search) {
+            pets = await PetModel.find({ name: { 
+                "$regex": search, 
+                "$options": "i" 
+            }}).populate({ path: "owner", select: "username createdAt" });
+        } else {
+            pets = await PetModel.find().populate({ path: "owner", select: "username createdAt" });
+        }
         res.status(200).json(pets);
     } catch (error) {
         handleError(error, res);

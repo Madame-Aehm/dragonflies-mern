@@ -4,32 +4,26 @@ import { baseURL } from '../utils/baseURL'
 import type { Pet } from '../@types'
 import PetCard from '../components/PetCard'
 
-function Homepage() {
+function Homepage2() {
   const [pets, setPets] = useState<Pet[]>([])
   const [on, setOn] = useState(true);
   const [filterValue, setFilterValue] = useState("");
 
-  const filteredPets = pets.filter(pet => {
-    for (let i = 0; i < 1000000000; i++) {;}
-    console.log("filtering...");
-    return filterValue 
-      ? pet.name.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase()) 
-      : true
-  })
+  const getData = async() => {
+    console.log("getting data")
+    try {
+      const response = await fetch(baseURL + "/pets?search=" + filterValue)
+      const result: Pet[] = await response.json()
+      console.log(result)
+      setPets(result)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
-    const getData = async() => {
-      try {
-        const response = await fetch(baseURL + "/pets")
-        const result: Pet[] = await response.json()
-        console.log(result)
-        setPets(result)
-      } catch (error) {
-        console.log(error)
-      }
-    }
     getData();
-  }, [])
+  }, [filterValue])
 
   return (
     <>
@@ -37,11 +31,11 @@ function Homepage() {
       <button onClick={() => setOn(!on)}>Switch</button>
       <p>{ on ? "ON" : "OFF" }</p>
       <input type="text" value={filterValue} onChange={(e) => setFilterValue(e.target.value)} />
-      { filteredPets.map((pet) => {
+      { pets.map((pet) => {
         return <PetCard key={pet._id} pet={pet} />
       }) }
     </>
   )
 }
 
-export default Homepage
+export default Homepage2
