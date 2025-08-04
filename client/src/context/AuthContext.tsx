@@ -2,7 +2,6 @@
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react"
 import type { User } from "../@types"
 import { baseURL } from "../utils/baseURL"
-import { useNavigate } from "react-router"
 
 interface AuthContextType {
     user: User | null
@@ -23,7 +22,6 @@ export const AuthContext = createContext<AuthContextType>(defaultValue);
 
 export const AuthContextProvider = ({ children }: PropsWithChildren) => {
     const [user, setUser] = useState<User | null>(null)
-    const navigate = useNavigate()
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -45,14 +43,12 @@ export const AuthContextProvider = ({ children }: PropsWithChildren) => {
                     const error = await response.json();
                     console.log("error", error)
                     localStorage.removeItem("token")
-                    navigate("/login")
                 }
             } catch (error) {
                 console.log("catch error", error);
             }
         }
         if (token) getActiveUser()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
