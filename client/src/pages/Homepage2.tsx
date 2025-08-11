@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import '../App.css'
 import { baseURL } from '../utils/baseURL'
 import type { Pet } from '../@types'
@@ -8,9 +8,14 @@ function Homepage2() {
   const [pets, setPets] = useState<Pet[]>([])
   const [on, setOn] = useState(true);
   const [filterValue, setFilterValue] = useState("");
+  const throttle = useRef(false)
 
   const getData = async() => {
     console.log("getting data")
+    throttle.current = true;
+    setTimeout(() => {
+      throttle.current = false
+    }, 2000)
     try {
       const response = await fetch(baseURL + "/pets?search=" + filterValue)
       const result: Pet[] = await response.json()
@@ -22,7 +27,9 @@ function Homepage2() {
   }
 
   useEffect(() => {
-    getData();
+    if (!throttle.current) {
+      getData()
+    }
   }, [filterValue])
 
   return (

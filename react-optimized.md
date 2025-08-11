@@ -38,10 +38,7 @@ const filteredPets = pets.filter(pet => {
 ```ts
 const filteredPets = useMemo(() => pets.filter(pet => {
     for (let i = 0; i < 1000000000; i++) {;}
-    console.log("filtering...");
-    return filterValue 
-        ? pet.name.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase()) 
-        : true
+    // ..
 }), [filterValue, pets]) 
 // if either the pets array or the user input filterValue change
 // filterPets would need to be recalculated
@@ -53,14 +50,8 @@ The `useCallback()` hook is used to memoize function definitions. If you are mem
 
 ```ts
 const getData = async() => {
-    try {
-        const response = await fetch(baseURL + "/pets?search=" + filterValue)
-        const result: Pet[] = await response.json()
-        console.log(result)
-        setPets(result)
-    } catch (error) {
-        console.log(error)
-    }
+    const response = await fetch(baseURL + "/pets?search=" + filterValue)
+    // ..
 }
 
 useEffect(() => {
@@ -71,15 +62,8 @@ useEffect(() => {
 
 ```ts
 const getData = useCallback(async() => {
-    console.log("getting data")
-    try {
-        const response = await fetch(baseURL + "/pets?search=" + filterValue)
-        const result: Pet[] = await response.json()
-        console.log(result)
-        setPets(result)
-    } catch (error) {
-        console.log(error)
-    }
+    const response = await fetch(baseURL + "/pets?search=" + filterValue)
+    // ..
 }, [filterValue])
 
 useEffect(() => {
@@ -119,7 +103,9 @@ function Component() {
 }
 ```
 
-## Debouncing & AbortController
+## Handling Async Operations
+
+### Debouncing
 
 Debouncing is the practice of delaying a function call until a timeout period has elapsed. For example, instead of sending a request to the server for _every_ `onChange` of an input, wait until the user has paused in typing before sending the request. Each keystroke refreshes the countdown. Use a `useRef()` and the `useEffect()` cleanup to achieve this for fetching:
 
@@ -144,7 +130,36 @@ const useFetch = ({ filterValue }: Props) => {
 }
 ```
 
-A similar logic can be applied to the `fetch` api. If your user is impatient and clicking many things, you might need to  Imagine you need to cancel a request _after_ it has been sent - set a fetch to a controller signal, and you can **abort** that request manually:
+### Throttling
+
+The same logic can be applied in reverse to ensure the same function cannot be executed again _within a timeout period_ after being called. This is called **throttling**, and might be applied to a function triggered by a scroll event:
+
+```tsx
+const useFetch = ({ filterValue }: Props) => {
+    // ... initialize state variables
+    const throttle = useRef(false)
+
+    useEffect(() => {
+        const fetchData = async() => {
+            throttle.current = true;
+            setTimeout(() => {
+                throttle.current = false
+            }, 500)
+            //.. fetch data
+        }
+        
+        if (!throttle.current) {
+            fetchData()
+        }
+    }, [filterValue])
+}
+```
+
+If you find you need to do this often, consider creating custom hooks, or use libraries such as [Lodash](https://lodash.com/) that can help implementing these functionalities.
+
+### Aborting
+
+A similar logic can be applied to the `fetch` api. If your user is impatient and clicking many things, they can create a race condition - multiple async operations are being resolved, but they may not resolve in the expected order, creating confusion in your UI. In this case, you might cancel an active request when the user triggers a new one. Do this by setting the fetch to a controller signal, which you can then **abort** manually:
 
 ```ts
 useEffect(() => {
@@ -165,10 +180,8 @@ useEffect(() => {
 }, [filterValue])
 ```
 
-**Note** aborting a controller unnecessarily triggers an error, a condition will need to be included in the catch block: `if (error.name !== "AbortError")` to avoid handling this error.
+**Note:** aborting a controller triggers an error, a condition will need to be included in the catch block: `if (error.name !== "AbortError")` to avoid handling this error.
 
 ## Optimistic state updates
 
-While there is a `useOptimistic()` React Hook, this is more of a UX logic pattern. Make the assumption that your async request will succeed, e.g. the profile changes will update, the item will be added to favorites, etc. What state changes are made 
-
-## Suspense
+While there is a new [`useOptimistic()` React Hook](https://react.dev/reference/react/useOptimistic), this is more of a UX logic pattern. Make the assumption that your async request will succeed, e.g. the profile will updated, the item will be added to favorites, etc. What state changes are made in that instance? If you can immediately apply the changes (i.e. you're not waiting for data from the server), then apply them. In the case of an error, **revert** those state changes. If the promise successfully resolves, then no further state updates are required. 
