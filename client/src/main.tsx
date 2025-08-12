@@ -9,7 +9,8 @@ import Register from './pages/Register.tsx';
 import Login from './pages/Login.tsx';
 import Profile from './pages/Profile.tsx';
 import ProtectedLayout from './components/layouts/ProtectedLayout.tsx';
-import Homepage2 from './pages/Homepage2.tsx';
+import Homepage3 from './pages/Homepage3.tsx';
+// import Homepage2 from './pages/Homepage2.tsx';
 
 const router = createBrowserRouter([
   {
@@ -17,7 +18,7 @@ const router = createBrowserRouter([
                 <NavBarLayout />
               </AuthContextProvider>,
     children: [
-      { index: true, element: <Homepage2 /> },
+      { index: true, element: <Homepage3 /> },
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       {

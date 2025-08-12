@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import '../App.css'
 import { baseURL } from '../utils/baseURL'
 import type { Pet } from '../@types'
@@ -9,13 +9,15 @@ function Homepage() {
   const [on, setOn] = useState(true);
   const [filterValue, setFilterValue] = useState("");
 
-  const filteredPets = pets.filter(pet => {
-    for (let i = 0; i < 1000000000; i++) {;}
-    console.log("filtering...");
-    return filterValue 
-      ? pet.name.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase()) 
-      : true
-  })
+  const filteredPets = useMemo(() => {
+      return pets.filter(pet => {
+      for (let i = 0; i < 100000000; i++) {;}
+      // console.log("filtering...");
+      return filterValue 
+        ? pet.name.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase()) 
+        : true
+    })
+  }, [pets, filterValue])
 
   useEffect(() => {
     const getData = async() => {
